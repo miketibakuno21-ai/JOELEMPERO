@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joel's Web - Next-Gen Web Browser</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Fira Code -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace']
+                    },
+                    colors: {
+                        theme: {
+                            bg: 'var(--bg-color)',
+                            card: 'var(--card-color)',
+                            border: 'var(--border-color)',
+                            accent: 'var(--accent-color)',
+                            accentHover: 'var(--accent-hover)',
+                            text: 'var(--text-color)',
+                            subtext: 'var(--subtext-color)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        :root {
+            /* Default Dark Theme */
+            --bg-color: #0f172a;
+            --card-color: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(51, 65, 85, 0.6);
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-color: #f8fafc;
+            --subtext-color: #94a3b8;
+            --header-bg: #1e293b;
+        }
+
+        /* Neon Theme */
+        .theme-neon {
+            --bg-color: #09090b;
+            --card-color: rgba(24, 24, 27, 0.85);
+            --border-color: rgba(168, 85, 247, 0.4);
+            --accent-color: #a855f7;
+            --accent-hover: #9333ea;
+            --text-color: #fafafa;
+            --subtext-color: #a1a1aa;
+            --header-bg: #18181b;
+        }
+
+        /* Cyberpunk Theme */
+        .theme-cyberpunk {
+            --bg-color: #120324;
+            --card-color: rgba(31, 9, 58, 0.85);
+            --border-color: rgba(244, 63, 94, 0.5);
+            --accent-color: #06b6d4;
+            --accent-hover: #0891b2;
+            --text-color: #fdf4ff;
+            --subtext-color: #e879f9;
+            --header-bg: #1e0938;
+        }
+
+        /* Light Theme */
+        .theme-light {
+            --bg-color: #f8fafc;
+            --card-color: rgba(255, 255, 255, 0.9);
+            --border-color: rgba(226, 232, 240, 0.9);
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-color: #0f172a;
+            --subtext-color: #64748b;
+            --header-bg: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .theme-card {
+            background-color: var(--card-color);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.6);
+        }
+
+        /* Loading progress animation */
+        @keyframes loadBar {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        .animate-load {
+            animation: loadBar 0.35s ease-out forwards;
+        }
+
+        /* Custom glow effects */
+        .glow-accent {
+            box-shadow: 0 0 25px -5px var(--accent-color);
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans flex flex-col p-2 sm:p-4 lg:p-6 transition-all duration-300">
+
+    <header class="max-w-7xl w-full mx-auto mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 px-2">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-black shadow-lg">
+                J
+            </div>
+            <div>
+                <h1 class="text-xl font-black tracking-tight flex items-center gap-2">
+                    Joel's Web
+                    <span class="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">v4.0 Ultra</span>
+                </h1>
+                <p class="text-xs text-gray-400">Next-Generation Browser Engine & Interactive Showcase</p>
+            </div>
+        </div>
+
+        <!-- Global Theme Selector & Actions -->
+        <div class="flex items-center gap-2 bg-gray-900/60 p-1.5 rounded-2xl border border-gray-800 text-xs">
+            <span class="text-gray-400 font-medium px-2 hidden sm:inline"><i class="fas fa-palette mr-1"></i> Mode:</span>
+            <button onclick="setBrowserTheme('dark')" id="theme-dark-btn" class="px-2.5 py-1 rounded-xl font-semibold transition bg-blue-600 text-white">Dark</button>
+            <button onclick="setBrowserTheme('neon')" id="theme-neon-btn" class="px-2.5 py-1 rounded-xl font-semibold transition text-gray-400 hover:text-white">Neon</button>
+            <button onclick="setBrowserTheme('cyberpunk')" id="theme-cyberpunk-btn" class="px-2.5 py-1 rounded-xl font-semibold transition text-gray-400 hover:text-white">Cyber</button>
+            <button onclick="setBrowserTheme('light')" id="theme-light-btn" class="px-2.5 py-1 rounded-xl font-semibold transition text-gray-400 hover:text-white">Light</button>
+        </div>
+    </header>
+
+    <div id="browser-window" class="max-w-7xl w-full mx-auto flex-1 bg-gray-900/90 backdrop-blur-xl rounded-2xl border border-gray-800 shadow-2xl overflow-hidden flex flex-col min-h-[82vh] transition-all">
+
+        <!-- BROWSER TOP BAR (Window controls & Tabs) -->
+        <div class="bg-gray-950/80 border-b border-gray-800/80 flex flex-col flex-shrink-0">
+            
+            <!-- Window Controls + Tab Strip -->
+            <div class="flex items-center px-3 pt-2 gap-2 overflow-x-auto no-scrollbar">
+                <!-- Mac-style window action dots -->
+                <div class="flex items-center gap-1.5 px-2 mr-2">
+                    <button onclick="simulateWindow('close')" class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition flex items-center justify-center group" title="Close Window">
+                        <i class="fas fa-times text-[8px] text-red-950 opacity-0 group-hover:opacity-100"></i>
+                    </button>
+                    <button onclick="simulateWindow('minimize')" class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition flex items-center justify-center group" title="Minimize">
+                        <i class="fas fa-minus text-[8px] text-yellow-950 opacity-0 group-hover:opacity-100"></i>
+                    </button>
+                    <button onclick="toggleFullscreen()" class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition flex items-center justify-center group" title="Maximize">
+                        <i class="fas fa-expand text-[8px] text-green-950 opacity-0 group-hover:opacity-100"></i>
+                    </button>
+                </div>
+
+                <!-- Tab Container -->
+                <div id="tab-strip" class="flex items-center gap-1 overflow-x-auto max-w-full">
+                    <!-- Dynamic Tabs Rendered via JS -->
+                </div>
+
+                <!-- Add New Tab Button -->
+                <button onclick="addTab()" class="p-1.5 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition" title="New Tab">
+                    <i class="fas fa-plus text-xs"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 bg-gray-900/90 border-t border-gray-800/50">
+                <!-- Navigation History Buttons -->
+                <div class="flex items-center gap-1 text-gray-300">
+                    <button id="nav-back-btn" onclick="goBack()" class="p-1.5 rounded-lg hover:bg-gray-800 disabled:opacity-30 transition" title="Back">
+                        <i class="fas fa-arrow-left text-xs"></i>
+                    </button>
+                    <button id="nav-forward-btn" onclick="goForward()" class="p-1.5 rounded-lg hover:bg-gray-800 disabled:opacity-30 transition" title="Forward">
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                    <button onclick="reloadTab()" class="p-1.5 rounded-lg hover:bg-gray-800 transition" title="Reload">
+                        <i id="reload-icon" class="fas fa-redo-alt text-xs"></i>
+                    </button>
+                    <button onclick="navigateTo('joel://home')" class="p-1.5 rounded-lg hover:bg-gray-800 transition" title="Home">
+                        <i class="fas fa-home text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- Address / URL Form -->
+                <form onsubmit="handleUrlSubmit(event)" class="flex-1 flex items-center bg-gray-950/90 border border-gray-700/80 focus-within:border-blue-500 rounded-full px-3 py-1 shadow-inner transition">
+                    <i class="fas fa-lock text-emerald-400 text-xs mr-2" title="Encrypted Connection (Joel Guard Shield)"></i>
+                    <input id="address-bar" type="text" autocomplete="off" value="joel://home" class="w-full bg-transparent text-xs sm:text-sm text-gray-100 focus:outline-none font-mono" placeholder="Type a URL or joel:// search query..." />
+                    <button type="submit" class="text-gray-400 hover:text-blue-400 px-1 transition" title="Go">
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </button>
+                </form>
+
+                <!-- Extension & Security Icons -->
+                <div class="flex items-center gap-1">
+                    <button onclick="toggleExtension('adblock')" id="ext-adblock" class="p-1.5 text-emerald-400 hover:bg-gray-800 rounded-lg transition" title="Joel Shield: AdBlock Active">
+                        <i class="fas fa-shield-halved text-xs"></i>
+                    </button>
+                    <button onclick="toggleExtension('ai')" id="ext-ai" class="p-1.5 text-purple-400 hover:bg-gray-800 rounded-lg transition" title="Joel AI Assistant Active">
+                        <i class="fas fa-sparkles text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 px-3 py-1 bg-gray-950/40 border-t border-gray-800/40 text-xs overflow-x-auto whitespace-nowrap">
+                <span class="text-gray-500 text-[10px] font-bold uppercase tracking-wider px-1">Bookmarks:</span>
+                <button onclick="navigateTo('joel://home')" class="px-2 py-0.5 rounded text-gray-300 hover:bg-gray-800 flex items-center gap-1.5 transition">
+                    <i class="fas fa-compass text-blue-400 text-[10px]"></i> Home
+                </button>
+                <button onclick="navigateTo('joel://speed')" class="px-2 py-0.5 rounded text-gray-300 hover:bg-gray-800 flex items-center gap-1.5 transition">
+                    <i class="fas fa-bolt text-yellow-400 text-[10px]"></i> Speed Benchmarks
+                </button>
+                <button onclick="navigateTo('joel://features')" class="px-2 py-0.5 rounded text-gray-300 hover:bg-gray-800 flex items-center gap-1.5 transition">
+                    <i class="fas fa-cubes text-purple-400 text-[10px]"></i> Features Hub
+                </button>
+                <button onclick="navigateTo('joel://arcade')" class="px-2 py-0.5 rounded text-gray-300 hover:bg-gray-800 flex items-center gap-1.5 transition">
+                    <i class="fas fa-gamepad text-emerald-400 text-[10px]"></i> Arcade Game
+                </button>
+                <button onclick="navigateTo('joel://download')" class="px-2 py-0.5 rounded text-gray-300 hover:bg-gray-800 flex items-center gap-1.5 transition">
+                    <i class="fas fa-download text-pink-400 text-[10px]"></i> Download Browser
+                </button>
+            </div>
+
+            <!-- Loading Bar Indicator -->
+            <div class="h-0.5 w-full bg-transparent overflow-hidden">
+                <div id="loading-bar" class="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 w-0"></div>
+            </div>
+        </div>
+
+        <main id="viewport" class="flex-1 overflow-y-auto relative bg-gray-950 text-gray-100 p-4 sm:p-8">
+            <!-- Dynamic Page Content Rendered Here -->
+        </main>
+
+        <!-- BROWSER FOOTER STATUS -->
+        <footer class="bg-gray-950/90 border-t border-gray-800/80 px-4 py-1.5 flex items-center justify-between text-[11px] text-gray-400 flex-shrink-0">
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                <span id="footer-status">Engine: Joel Quantum Core v4.0 (Optimal)</span>
+            </div>
+            <div class="flex items-center gap-4 hidden sm:flex">
+                <span><i class="fas fa-shield-alt text-emerald-400 mr-1"></i> Trackers Blocked: <strong id="tracker-count">1,482</strong></span>
+                <span><i class="fas fa-memory text-blue-400 mr-1"></i> RAM: <strong id="ram-usage">18.4 MB</strong></span>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        // GLOBAL STATE
+        const browserState = {
+            tabs: [
+                { id: 'tab-1', title: 'Home - Joel\'s Web', url: 'joel://home', history: ['joel://home'], historyIndex: 0 }
+            ],
+            activeTabId: 'tab-1',
+            theme: 'dark',
+            extensions: {
+                adblock: true,
+                ai: true
+            },
+            notes: "Welcome to Joel's Web Quick Scratchpad!\n\n- Test the speed benchmarks at joel://speed\n- Play the embedded game at joel://arcade\n- Toggle custom themes in the header bar above!",
+            gameScore: 0,
+            gameActive: false,
+            trackersBlocked: 1482
+        };
+
+        // DOM Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTabs();
+            renderViewport();
+            startRamSimulator();
+        });
+
+        // Get Current Tab
+        function getActiveTab() {
+            return browserState.tabs.find(t => t.id === browserState.activeTabId) || browserState.tabs[0];
+        }
+
+        // Tab Management
+        function renderTabs() {
+            const container = document.getElementById('tab-strip');
+            container.innerHTML = '';
+
+            browserState.tabs.forEach(tab => {
+                const isActive = tab.id === browserState.activeTabId;
+                const el = document.createElement('div');
+                el.className = `flex items-center gap-2 px-3 py-1.5 rounded-t-xl text-xs font-medium cursor-pointer max-w-[190px] min-w-[130px] justify-between transition-all select-none ${
+                    isActive 
+                    ? 'bg-gray-900 text-white font-semibold border-t-2 border-blue-500 shadow-lg' 
+                    : 'bg-gray-950/60 text-gray-400 hover:bg-gray-900/50 hover:text-gray-200'
+                }`;
+
+                let icon = 'fas fa-compass text-blue-400';
+                if (tab.url.includes('speed')) icon = 'fas fa-bolt text-yellow-400';
+                if (tab.url.includes('features')) icon = 'fas fa-cubes text-purple-400';
+                if (tab.url.includes('arcade')) icon = 'fas fa-gamepad text-emerald-400';
+                if (tab.url.includes('download')) icon = 'fas fa-download text-pink-400';
+
+                el.onclick = () => switchTab(tab.id);
+                el.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <i class="${icon} text-[11px]"></i>
+                        <span class="truncate">${tab.title}</span>
+                    </div>
+                    ${browserState.tabs.length > 1 ? `
+                        <button onclick="closeTab(event, '${tab.id}')" class="p-0.5 rounded-full hover:bg-gray-800 text-gray-400 hover:text-white transition">
+                            <i class="fas fa-times text-[10px]"></i>
+                        </button>
+                    ` : ''}
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function addTab(url = 'joel://home') {
+            const newId = 'tab-' + Date.now();
+            const newTab = {
+                id: newId,
+                title: getTitleForUrl(url),
+                url: url,
+                history: [url],
+                historyIndex: 0
+            };
+            browserState.tabs.push(newTab);
+            browserState.activeTabId = newId;
+            renderTabs();
+            navigateTo(url, true);
+        }
+
+        function switchTab(tabId) {
+            if (browserState.activeTabId === tabId) return;
+            browserState.activeTabId = tabId;
+            renderTabs();
+            const tab = getActiveTab();
+            document.getElementById('address-bar').value = tab.url;
+            updateNavState();
+            renderViewport();
+        }
+
+        function closeTab(event, tabId) {
+            event.stopPropagation();
+            if (browserState.tabs.length <= 1) return;
+
+            const idx = browserState.tabs.findIndex(t => t.id === tabId);
+            browserState.tabs = browserState.tabs.filter(t => t.id !== tabId);
+
+            if (browserState.activeTabId === tabId) {
+                const nextTab = browserState.tabs[Math.max(0, idx - 1)];
+                browserState.activeTabId = nextTab.id;
+            }
+
+            renderTabs();
+            const current = getActiveTab();
+            document.getElementById('address-bar').value = current.url;
+            updateNavState();
+            renderViewport();
+        }
+
+        // Navigation
+        function navigateTo(url, isNew = true) {
+            triggerLoadBar();
+
+            let targetUrl = url.trim();
+            if (!targetUrl.startsWith('joel://') && !targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+                if (targetUrl.includes('.') && !targetUrl.includes(' ')) {
+                    targetUrl = 'https://' + targetUrl;
+                } else {
+                    targetUrl = 'joel://home';
+                }
+            }
+
+            const currentTab = getActiveTab();
+            currentTab.url = targetUrl;
+            currentTab.title = getTitleForUrl(targetUrl);
+
+            if (isNew) {
+                currentTab.history = currentTab.history.slice(0, currentTab.historyIndex + 1);
+                currentTab.history.push(targetUrl);
+                currentTab.historyIndex = currentTab.history.length - 1;
+            }
+
+            document.getElementById('address-bar').value = targetUrl;
+            updateNavState();
+            renderTabs();
+
+            setTimeout(() => {
+                renderViewport();
+            }, 100);
+        }
+
+        function goBack() {
+            const tab = getActiveTab();
+            if (tab.historyIndex > 0) {
+                tab.historyIndex--;
+                navigateTo(tab.history[tab.historyIndex], false);
+            }
+        }
+
+        function goForward() {
+            const tab = getActiveTab();
+            if (tab.historyIndex < tab.history.length - 1) {
+                tab.historyIndex++;
+                navigateTo(tab.history[tab.historyIndex], false);
+            }
+        }
+
+        function reloadTab() {
+            const icon = document.getElementById('reload-icon');
+            icon.classList.add('fa-spin');
+            triggerLoadBar();
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                renderViewport();
+            }, 300);
+        }
+
+        function updateNavState() {
+            const tab = getActiveTab();
+            document.getElementById('nav-back-btn').disabled = tab.historyIndex <= 0;
+            document.getElementById('nav-forward-btn').disabled = tab.historyIndex >= tab.history.length - 1;
+        }
+
+        function handleUrlSubmit(event) {
+            event.preventDefault();
+            const inputVal = document.getElementById('address-bar').value;
+            navigateTo(inputVal);
+        }
+
+        function triggerLoadBar() {
+            const bar = document.getElementById('loading-bar');
+            bar.classList.remove('animate-load');
+            void bar.offsetWidth; // Force reflow
+            bar.classList.add('animate-load');
+        }
+
+        function getTitleForUrl(url) {
+            if (url.includes('home')) return 'Home - Joel\'s Web';
+            if (url.includes('speed')) return 'Benchmarks - Speed Test';
+            if (url.includes('features')) return 'Features & Extensions';
+            if (url.includes('arcade')) return 'Mini Arcade Runner';
+            if (url.includes('download')) return 'Download Joel\'s Web';
+            return 'External Web Site';
+        }
+
+        // Theme Switcher
+        function setBrowserTheme(themeName) {
+            const body = document.body;
+            body.className = "min-h-screen font-sans flex flex-col p-2 sm:p-4 lg:p-6 transition-all duration-300";
+
+            ['dark', 'neon', 'cyberpunk', 'light'].forEach(t => {
+                const btn = document.getElementById(`theme-${t}-btn`);
+                if (btn) {
+                    btn.className = "px-2.5 py-1 rounded-xl font-semibold transition text-gray-400 hover:text-white";
+                }
+            });
+
+            if (themeName === 'neon') {
+                body.classList.add('theme-neon');
+            } else if (themeName === 'cyberpunk') {
+                body.classList.add('theme-cyberpunk');
+            } else if (themeName === 'light') {
+                body.classList.add('theme-light');
+            }
+
+            const activeBtn = document.getElementById(`theme-${themeName}-btn`);
+            if (activeBtn) {
+                activeBtn.className = "px-2.5 py-1 rounded-xl font-semibold transition bg-blue-600 text-white shadow-md";
+            }
+            browserState.theme = themeName;
+        }
+
+        // Extension Toggles
+        function toggleExtension(ext) {
+            browserState.extensions[ext] = !browserState.extensions[ext];
+            const btn = document.getElementById(`ext-${ext}`);
+            if (ext === 'adblock') {
+                btn.className = browserState.extensions.adblock ? "p-1.5 text-emerald-400 hover:bg-gray-800 rounded-lg transition" : "p-1.5 text-gray-600 hover:bg-gray-800 rounded-lg transition";
+            } else if (ext === 'ai') {
+                btn.className = browserState.extensions.ai ? "p-1.5 text-purple-400 hover:bg-gray-800 rounded-lg transition" : "p-1.5 text-gray-600 hover:bg-gray-800 rounded-lg transition";
+            }
+        }
+
+        function simulateWindow(action) {
+            const vp = document.getElementById('viewport');
+            if (action === 'close') {
+                vp.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center p-8 text-gray-400">
+                        <i class="fas fa-power-off text-5xl mb-4 text-gray-700"></i>
+                        <h2 class="text-xl font-bold text-gray-200 mb-2">Browser Window Closed</h2>
+                        <p class="text-xs mb-6 max-w-sm">You closed the simulated viewport window. Relaunch to continue exploring.</p>
+                        <button onclick="location.reload()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl shadow-lg transition">
+                            Re-Open Browser
+                        </button>
+                    </div>
+                `;
+            } else if (action === 'minimize') {
+                vp.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center p-8 text-gray-400">
+                        <p class="text-sm font-mono mb-4">Window Minimized</p>
+                        <button onclick="renderViewport()" class="px-4 py-2 bg-gray-800 text-white text-xs rounded-lg border border-gray-700">Restore</button>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else if (document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function startRamSimulator() {
+            setInterval(() => {
+                const ram = (16 + Math.random() * 5).toFixed(1);
+                const el = document.getElementById('ram-usage');
+                if (el) el.innerText = `${ram} MB`;
+
+                browserState.trackersBlocked += Math.floor(Math.random() * 2);
+                const trEl = document.getElementById('tracker-count');
+                if (trEl) trEl.innerText = browserState.trackersBlocked.toLocaleString();
+            }, 4000);
+        }
+
+        function renderViewport() {
+            const current = getActiveTab();
+            const url = current.url;
+            const vp = document.getElementById('viewport');
+
+            browserState.gameActive = false;
+
+            if (url.includes('home')) {
+                vp.innerHTML = getHomeHTML();
+            } else if (url.includes('speed')) {
+                vp.innerHTML = getSpeedHTML();
+            } else if (url.includes('features')) {
+                vp.innerHTML = getFeaturesHTML();
+            } else if (url.includes('arcade')) {
+                vp.innerHTML = getArcadeHTML();
+                initArcadeGame();
+            } else if (url.includes('download')) {
+                vp.innerHTML = getDownloadHTML();
+            } else {
+                vp.innerHTML = getExternalSiteHTML(url);
+            }
+        }
+
+        // 1. HOME LANDING PAGE
+        function getHomeHTML() {
+            return `
+                <div class="max-w-5xl mx-auto py-8">
+                    <!-- Hero Section -->
+                    <div class="text-center mb-12">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold mb-6">
+                            <i class="fas fa-rocket"></i> Engineered for Power Users & Creators
+                        </div>
+                        <h1 class="text-4xl sm:text-6xl font-black tracking-tight mb-6 leading-tight">
+                            The Web, Re-Imagined by <br/>
+                            <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500">
+                                Joel's Web Browser
+                            </span>
+                        </h1>
+                        <p class="text-gray-400 text-sm sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+                            Zero tracking, 4x faster page loads, native AI integration, and modular workspaces built into a sleek glassmorphic desktop environment.
+                        </p>
+                        <div class="flex flex-wrap items-center justify-center gap-4">
+                            <button onclick="navigateTo('joel://download')" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg shadow-blue-600/30 transition transform hover:-translate-y-0.5">
+                                Download Joel's Web
+                            </button>
+                            <button onclick="navigateTo('joel://speed')" class="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-gray-200 border border-gray-800 font-bold text-xs sm:text-sm rounded-xl transition">
+                                View Performance Benchmarks
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Key Feature Cards Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+                        <div class="p-5 bg-gray-900/60 border border-gray-800/80 rounded-2xl hover:border-blue-500/50 transition group">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Joel Shield AdBlock</h3>
+                            <p class="text-xs text-gray-400">Blocks trackers & invasive scripts natively before they load.</p>
+                        </div>
+
+                        <div class="p-5 bg-gray-900/60 border border-gray-800/80 rounded-2xl hover:border-yellow-500/50 transition group">
+                            <div class="w-10 h-10 rounded-xl bg-yellow-500/10 text-yellow-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Quantum Render</h3>
+                            <p class="text-xs text-gray-400">Loads pages 300% faster with optimized memory footprint.</p>
+                        </div>
+
+                        <div class="p-5 bg-gray-900/60 border border-gray-800/80 rounded-2xl hover:border-purple-500/50 transition group">
+                            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fas fa-sparkles"></i>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Built-in AI Assistant</h3>
+                            <p class="text-xs text-gray-400">Summarize web pages, rewrite text, and answer questions instantly.</p>
+                        </div>
+
+                        <div class="p-5 bg-gray-900/60 border border-gray-800/80 rounded-2xl hover:border-emerald-500/50 transition group">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg mb-3 group-hover:scale-110 transition">
+                                <i class="fas fa-palette"></i>
+                            </div>
+                            <h3 class="font-bold text-sm text-white mb-1">Custom Themes</h3>
+                            <p class="text-xs text-gray-400">Switch between Dark, Neon, Cyberpunk, and Light UI instantly.</p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Scratchpad Widget inside simulated web page -->
+                    <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 shadow-xl">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+                                <i class="fas fa-sticky-note text-yellow-400"></i> Interactive Quick Notepad Widget
+                            </h3>
+                            <span class="text-[10px] text-gray-500">Auto-saved in browser state</span>
+                        </div>
+                        <textarea 
+                            oninput="browserState.notes = this.value"
+                            class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-blue-500 h-28 resize-none"
+                            placeholder="Type temporary notes here..."
+                        >${browserState.notes}</textarea>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. SPEED BENCHMARKS PAGE
+        function getSpeedHTML() {
+            return `
+                <div class="max-w-4xl mx-auto py-6">
+                    <div class="text-center mb-8">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-semibold mb-3">
+                            <i class="fas fa-tachometer-alt"></i> Benchmark Results 2026
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">Unmatched Speed & Efficiency</h2>
+                        <p class="text-xs sm:text-sm text-gray-400 max-w-lg mx-auto mt-2">
+                            Comparing page load latencies and memory usage against standard browsers.
+                        </p>
+                    </div>
+
+                    <!-- Chart Comparison Cards -->
+                    <div class="space-y-6 mb-8">
+                        <!-- Metric 1: Page Load Time -->
+                        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Average Page Load Speed (ms)</h4>
+                                    <p class="text-xs text-gray-400">Lower is better</p>
+                                </div>
+                                <span class="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">3.4x Faster</span>
+                            </div>
+                            
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="font-semibold text-blue-400">Joel's Web Core</span>
+                                        <span class="font-mono text-blue-400 font-bold">120 ms</span>
+                                    </div>
+                                    <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full rounded-full" style="width: 20%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Standard Chrome Engine</span>
+                                        <span class="font-mono text-gray-400">410 ms</span>
+                                    </div>
+                                    <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-gray-600 h-full rounded-full" style="width: 68%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Standard Firefox Engine</span>
+                                        <span class="font-mono text-gray-400">520 ms</span>
+                                    </div>
+                                    <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-gray-600 h-full rounded-full" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Metric 2: RAM Memory Consumption -->
+                        <div class="bg-gray-900/80 border border-gray-800 rounded-2xl p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">RAM Consumption (10 Active Tabs)</h4>
+                                    <p class="text-xs text-gray-400">Lower memory foot-print saves battery</p>
+                                </div>
+                                <span class="text-xs font-bold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">-65% Memory</span>
+                            </div>
+
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="font-semibold text-purple-400">Joel's Web Core</span>
+                                        <span class="font-mono text-purple-400 font-bold">340 MB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-purple-500 h-full rounded-full" style="width: 25%"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-gray-400">Conventional Browsers</span>
+                                        <span class="font-mono text-gray-400">1,250 MB</span>
+                                    </div>
+                                    <div class="w-full bg-gray-800 h-3 rounded-full overflow-hidden">
+                                        <div class="bg-gray-600 h-full rounded-full" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 3. FEATURES HUB
+        function getFeaturesHTML() {
+            return `
+                <div class="max-w-4xl mx-auto py-6">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-extrabold text-white">Browser Extensions & Modular Hub</h2>
+                        <p class="text-xs sm:text-sm text-gray-400 mt-1">Configure live extensions integrated into Joel's Web</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Feature 1 -->
+                        <div class="bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex items-start justify-between">
+                            <div class="flex gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fas fa-shield-halved"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Joel Guard AdBlocker</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Blocks 99.8% of trackers, banners, and popup scripts.</p>
+                                </div>
+                            </div>
+                            <input type="checkbox" ${browserState.extensions.adblock ? 'checked' : ''} onchange="toggleExtension('adblock')" class="w-4 h-4 accent-emerald-500 cursor-pointer">
+                        </div>
+
+                        <!-- Feature 2 -->
+                        <div class="bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex items-start justify-between">
+                            <div class="flex gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fas fa-sparkles"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Joel AI Co-Pilot</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Real-time web summarization and inline code assistance.</p>
+                                </div>
+                            </div>
+                            <input type="checkbox" ${browserState.extensions.ai ? 'checked' : ''} onchange="toggleExtension('ai')" class="w-4 h-4 accent-purple-500 cursor-pointer">
+                        </div>
+
+                        <!-- Feature 3 -->
+                        <div class="bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex items-start justify-between">
+                            <div class="flex gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Smart Tab Stacks</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Group tabs by topic and auto-sleep inactive tabs.</p>
+                                </div>
+                            </div>
+                            <input type="checkbox" checked class="w-4 h-4 accent-blue-500 cursor-pointer">
+                        </div>
+
+                        <!-- Feature 4 -->
+                        <div class="bg-gray-900/80 border border-gray-800 p-5 rounded-2xl flex items-start justify-between">
+                            <div class="flex gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-pink-500/10 text-pink-400 flex items-center justify-center text-lg flex-shrink-0">
+                                    <i class="fas fa-terminal"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-bold text-white">Joel Protocol (<code class="text-pink-400">joel://</code>)</h4>
+                                    <p class="text-xs text-gray-400 mt-1">Direct system level shortcuts to browser utilities.</p>
+                                </div>
+                            </div>
+                            <input type="checkbox" checked class="w-4 h-4 accent-pink-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 4. ARCADE MINI GAME
+        function getArcadeHTML() {
+            return `
+                <div class="max-w-2xl mx-auto py-4 flex flex-col items-center">
+                    <div class="text-center mb-4">
+                        <span class="text-xs uppercase font-bold tracking-wider text-emerald-400"><i class="fas fa-gamepad"></i> Offline Viewport Arcade</span>
+                        <h3 class="text-xl font-bold text-white">Joel's Cyber Runner</h3>
+                        <p class="text-xs text-gray-400">Press <kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">SPACE</kbd> or <kbd class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">CLICK</kbd> canvas to jump over obstacles.</p>
+                    </div>
+
+                    <div class="relative w-full bg-gray-900 border-2 border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
+                        <canvas id="arcade-canvas" width="600" height="220" class="w-full h-auto bg-gray-950 block"></canvas>
+                        
+                        <div id="arcade-overlay" class="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                            <i class="fas fa-space-shuttle text-4xl text-blue-400 mb-2 animate-bounce"></i>
+                            <h4 class="text-lg font-bold text-white mb-1">Cyber Runner Mini Game</h4>
+                            <p class="text-xs text-gray-400 mb-4">Jump over hazards inside Joel's Web browser sandbox!</p>
+                            <button onclick="startArcadeGame()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
+                                Start Game
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 5. DOWNLOAD PAGE
+        function getDownloadHTML() {
+            return `
+                <div class="max-w-4xl mx-auto py-8 text-center">
+                    <h2 class="text-3xl font-extrabold text-white mb-3">Get Joel's Web for All Your Devices</h2>
+                    <p class="text-xs sm:text-sm text-gray-400 max-w-md mx-auto mb-10">Available on macOS, Windows, Linux, and Mobile with instant cloud syncing.</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                        <div class="p-6 bg-gray-900/80 border border-gray-800 rounded-2xl hover:border-blue-500/50 transition">
+                            <i class="fab fa-apple text-3xl text-gray-200 mb-3"></i>
+                            <h3 class="font-bold text-sm text-white mb-1">macOS</h3>
+                            <p class="text-[11px] text-gray-400 mb-4">Apple Silicon & Intel</p>
+                            <button onclick="alert('Downloading Joel\'s Web for macOS...')" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Download .dmg</button>
+                        </div>
+
+                        <div class="p-6 bg-gray-900/80 border border-gray-800 rounded-2xl hover:border-blue-500/50 transition">
+                            <i class="fab fa-windows text-3xl text-blue-400 mb-3"></i>
+                            <h3 class="font-bold text-sm text-white mb-1">Windows</h3>
+                            <p class="text-[11px] text-gray-400 mb-4">Windows 11 / 10 64-bit</p>
+                            <button onclick="alert('Downloading Joel\'s Web for Windows...')" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Download .exe</button>
+                        </div>
+
+                        <div class="p-6 bg-gray-900/80 border border-gray-800 rounded-2xl hover:border-blue-500/50 transition">
+                            <i class="fab fa-linux text-3xl text-yellow-400 mb-3"></i>
+                            <h3 class="font-bold text-sm text-white mb-1">Linux</h3>
+                            <p class="text-[11px] text-gray-400 mb-4">Debian, Ubuntu, Arch</p>
+                            <button onclick="alert('Downloading Joel\'s Web for Linux...')" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Download .AppImage</button>
+                        </div>
+
+                        <div class="p-6 bg-gray-900/80 border border-gray-800 rounded-2xl hover:border-blue-500/50 transition">
+                            <i class="fas fa-mobile-alt text-3xl text-emerald-400 mb-3"></i>
+                            <h3 class="font-bold text-sm text-white mb-1">Mobile App</h3>
+                            <p class="text-[11px] text-gray-400 mb-4">iOS & Android</p>
+                            <button onclick="alert('Downloading Joel\'s Web Mobile...')" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Get Mobile Link</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getExternalSiteHTML(url) {
+            return `
+                <div class="max-w-xl mx-auto py-12 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-gray-900 border border-gray-800 flex items-center justify-center text-2xl text-blue-400 mx-auto mb-4">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Simulated Web View</h3>
+                    <p class="font-mono text-xs text-blue-400 bg-gray-900 border border-gray-800 py-1.5 px-3 rounded-lg inline-block mb-6">${url}</p>
+                    <p class="text-xs text-gray-400 mb-6 leading-relaxed">
+                        You navigated to an external web link inside Joel's Web sandbox simulation engine!
+                    </p>
+                    <button onclick="navigateTo('joel://home')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl transition">
+                        Return to Joel's Home Page
+                    </button>
+                </div>
+            `;
+        }
+
+        let arcadeCanvas, arcadeCtx, gameAnimId;
+        let player = { x: 40, y: 140, w: 20, h: 20, vy: 0, gravity: 0.7, jumping: false };
+        let obstacles = [];
+        let score = 0;
+
+        function initArcadeGame() {
+            arcadeCanvas = document.getElementById('arcade-canvas');
+            if (!arcadeCanvas) return;
+            arcadeCtx = arcadeCanvas.getContext('2d');
+
+            window.onkeydown = function(e) {
+                if (e.code === 'Space' && browserState.gameActive) {
+                    e.preventDefault();
+                    jumpPlayer();
+                }
+            };
+
+            arcadeCanvas.onclick = function() {
+                if (browserState.gameActive) {
+                    jumpPlayer();
+                }
+            };
+
+            drawStaticCanvas();
+        }
+
+        function drawStaticCanvas() {
+            if (!arcadeCtx) return;
+            arcadeCtx.fillStyle = '#030712';
+            arcadeCtx.fillRect(0, 0, arcadeCanvas.width, arcadeCanvas.height);
+
+            // Draw Ground Line
+            arcadeCtx.strokeStyle = '#374151';
+            arcadeCtx.lineWidth = 2;
+            arcadeCtx.beginPath();
+            arcadeCtx.moveTo(0, 180);
+            arcadeCtx.lineTo(600, 180);
+            arcadeCtx.stroke();
+        }
+
+        function jumpPlayer() {
+            if (!player.jumping) {
+                player.vy = -11;
+                player.jumping = true;
+            }
+        }
+
+        function startArcadeGame() {
+            const overlay = document.getElementById('arcade-overlay');
+            if (overlay) overlay.classList.add('hidden');
+
+            browserState.gameActive = true;
+            score = 0;
+            player.y = 140;
+            player.vy = 0;
+            player.jumping = false;
+            obstacles = [];
+
+            if (gameAnimId) cancelAnimationFrame(gameAnimId);
+            runArcadeLoop();
+        }
+
+        function runArcadeLoop() {
+            if (!browserState.gameActive) return;
+
+            // Physics Update
+            player.vy += player.gravity;
+            player.y += player.vy;
+
+            if (player.y >= 140) {
+                player.y = 140;
+                player.vy = 0;
+                player.jumping = false;
+            }
+
+            // Obstacle Spawning
+            if (Math.random() < 0.02 && (obstacles.length === 0 || obstacles[obstacles.length - 1].x < 430)) {
+                obstacles.push({
+                    x: 600,
+                    y: 144,
+                    w: 16,
+                    h: 22,
+                    speed: 5.5 + Math.floor(score / 80)
+                });
+            }
+
+            // Move Obstacles & Collision Check
+            for (let i = 0; i < obstacles.length; i++) {
+                obstacles[i].x -= obstacles[i].speed;
+                let obs = obstacles[i];
+
+                if (
+                    player.x < obs.x + obs.w &&
+                    player.x + player.w > obs.x &&
+                    player.y < obs.y + obs.h &&
+                    player.y + player.h > obs.y
+                ) {
+                    endArcadeGame();
+                    return;
+                }
+            }
+
+            obstacles = obstacles.filter(o => o.x > -20);
+            score++;
+
+            // Draw Canvas Frame
+            arcadeCtx.fillStyle = '#030712';
+            arcadeCtx.fillRect(0, 0, arcadeCanvas.width, arcadeCanvas.height);
+
+            // Ground Line
+            arcadeCtx.strokeStyle = '#3b82f6';
+            arcadeCtx.lineWidth = 2;
+            arcadeCtx.beginPath();
+            arcadeCtx.moveTo(0, 180);
+            arcadeCtx.lineTo(600, 180);
+            arcadeCtx.stroke();
+
+            // Draw Player Box
+            arcadeCtx.fillStyle = '#10b981';
+            arcadeCtx.fillRect(player.x, player.y, player.w, player.h);
+
+            // Draw Hazards
+            arcadeCtx.fillStyle = '#ef4444';
+            obstacles.forEach(obs => {
+                arcadeCtx.fillRect(obs.x, obs.y, obs.w, obs.h);
+            });
+
+            // Score HUD
+            arcadeCtx.fillStyle = '#f8fafc';
+            arcadeCtx.font = '12px "Fira Code", monospace';
+            arcadeCtx.fillText(`DISTANCE: ${score}`, 15, 25);
+
+            gameAnimId = requestAnimationFrame(runArcadeLoop);
+        }
+
+        function endArcadeGame() {
+            browserState.gameActive = false;
+            const overlay = document.getElementById('arcade-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.innerHTML = `
+                    <i class="fas fa-burst text-3xl text-red-500 mb-2"></i>
+                    <h4 class="text-base font-bold text-white">Collision Detected!</h4>
+                    <p class="text-xs text-gray-400 mb-4">Distance Survived: <strong class="text-emerald-400">${score}</strong></p>
+                    <button onclick="startArcadeGame()" class="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
+                        Play Again
+                    </button>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
